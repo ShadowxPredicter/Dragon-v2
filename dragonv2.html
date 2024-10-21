@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Web UI</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('https://i.ibb.co/n63z3rv/image.png') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .prediction-box {
+            background: rgba(0, 0, 0, 0.7);
+            border: 3px solid red;
+            padding: 30px;
+            text-align: center;
+            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .prediction-box:hover {
+            transform: scale(1.05);
+        }
+
+        .prediction-text {
+            font-size: 48px;
+            color: red;
+            margin: 20px 0;
+            opacity: 0; /* Hidden initially */
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .time-display {
+            font-size: 24px;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .spinner {
+            border: 6px solid rgba(255, 255, 255, 0.3);
+            border-top: 6px solid red;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .show {
+            opacity: 1 !important;
+        }
+
+        .hide {
+            opacity: 0 !important;
+        }
+
+        /* Footer section */
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            font-size: 14px;
+            color: white;
+        }
+
+        .footer a {
+            color: cyan;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Media Query for responsiveness */
+        @media (max-width: 400px) {
+            .prediction-box {
+                width: 90%;
+            }
+
+            .prediction-text {
+                font-size: 36px;
+            }
+
+            .time-display {
+                font-size: 20px;
+            }
+
+            .footer {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="prediction-box">
+    <div id="prediction" class="prediction-text"></div>
+    <div id="loading" class="spinner"></div>
+    <div id="time" class="time-display"></div>
+</div>
+
+<!-- Footer with your link -->
+<div class="footer">
+    MADE BY <a href="https://t.me/xralmr" target="_blank">https://t.me/xralmr</a>
+</div>
+
+<script>
+    // Function to update the time in Asia/Kolkata timezone
+    function updateTime() {
+        let options = { timeZone: 'Asia/Kolkata', hour12: false };
+        let time = new Date().toLocaleTimeString('en-GB', options);
+        document.getElementById('time').textContent = time;
+    }
+
+    // Function to simulate AI-based random prediction
+    function getRandomPrediction() {
+        const predictions = ["BIG", "SMALL"];
+        // Basic random choice (50% for each option)
+        let randomIndex = Math.floor(Math.random() * predictions.length);
+        return predictions[randomIndex];
+    }
+
+    // Function to show prediction with loading animation
+    function showPrediction() {
+        // Show loading spinner for 2 seconds, then show prediction
+        document.getElementById('loading').style.display = "block"; // Show spinner
+        document.getElementById('prediction').classList.add('hide'); // Hide prediction initially
+
+        setTimeout(() => {
+            let prediction = getRandomPrediction(); // Get random AI-like prediction
+            document.getElementById('prediction').textContent = prediction; // Set prediction text
+            document.getElementById('loading').style.display = "none"; // Hide spinner
+            document.getElementById('prediction').classList.remove('hide'); // Show prediction
+            document.getElementById('prediction').classList.add('show'); // Animate appearance
+        }, 2000); // Delay for 2 seconds (spinner duration)
+    }
+
+    // Function to update prediction at every full minute
+    function updatePrediction() {
+        let now = new Date();
+        let seconds = now.getSeconds();
+
+        // Check if seconds are 00 to show loading and update prediction
+        if (seconds === 0) {
+            document.getElementById('loading').style.display = "block"; // Show spinner
+            document.getElementById('prediction').classList.remove('show');
+            document.getElementById('prediction').classList.add('hide'); // Hide old prediction
+
+            setTimeout(() => {
+                let prediction = getRandomPrediction(); // AI-based random prediction
+                document.getElementById('prediction').textContent = prediction; // Set new prediction
+                document.getElementById('loading').style.display = "none"; // Hide spinner
+                document.getElementById('prediction').classList.remove('hide');
+                document.getElementById('prediction').classList.add('show'); // Animate new prediction
+            }, 2000); // 2 seconds delay for loading effect
+        }
+    }
+
+    // Initial call to display the time and show the first prediction with animation
+    updateTime();
+    showPrediction();
+
+    // Update time every second
+    setInterval(updateTime, 1000);
+
+    // Update prediction every second to check if it's a new minute
+    setInterval(updatePrediction, 1000);
+</script>
+
+</body>
+</html>
